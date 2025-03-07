@@ -24,11 +24,17 @@ data "aws_subnets" "default" {
   }
 }
 
-terraform {
-  backend "s3" {
-    bucket = "srunithbucket"
-    key = "terraform.tfstate"
-    region = "us-east-1"    
-    
+
+
+#implementing the state locking provision
+resource "aws_dynamodb_table" "terraform_state_lock" {
+  name           = "terraform-state-lock"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "LockID"
+  attribute {
+    name = "LockID"
+    type = "S"
   }
 }
+
